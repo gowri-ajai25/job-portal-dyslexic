@@ -7,21 +7,28 @@ module.exports = (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   // If there's no Authorization header
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    console.error('Authorization header missing or invalid format');
-    return next(new HttpError('Authentication failed! Authorization header missing or malformed.', 401));
+  if (!authHeader) {
+    console.error('No Authorization header found');
+    return next(new HttpError('Authorization header missing', 401));
+  }
+
+  if (!authHeader.startsWith('Bearer ')) {
+    console.error('Malformed Authorization header:', authHeader);
+    return next(new HttpError('Authorization header must start with "Bearer "', 401));
   }
 
   const token = authHeader.split(' ')[1]; // Expected format: "Bearer TOKEN"
 
   // 2) Verify token
-  let decodedToken;
   try {
-    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.userData = { userId: decoded.id };
+    next();
   } catch (err) {
-    console.error('Token verification failed:', err.message);
-    return next(new HttpError('Authentication failed! Invalid or expired token.', 401));
+    console.error('JWT verification failed:', err.message);
+    return next(new HttpError('Invalid or expired token', 401));
   }
+
 
   // 3) Attach user data from token
   req.userData = { 

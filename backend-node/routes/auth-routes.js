@@ -80,46 +80,39 @@ router.post(
 );
 
 // Login Route
-router.post('/api/auth/login', async (req, res) => {
+router.post('/login', async (req, res) => {
   try {
-    let { user_email, user_password } = req.body;
+    const { user_email, user_password } = req.body;
 
-    // 1. Check the request body to ensure you're sending the correct data
-    console.log("Login request body:", req.body); // Logs the request data
-
-    // 2. Trim any extra spaces from email and password (important for comparison)
-    user_email = user_email.trim();
-    user_password = user_password.trim();
-
-    // 3. Validate the incoming data
-    if (!user_email || !user_password) {
-      return res.status(400).json({ message: 'Email and password are required.' });
-    }
-
-    // 4. Find the user in the database
+    // 1. Check if user exists
     const user = await User.findOne({ user_email });
-    console.log("User from DB:", user); // Logs the user found from the DB (if any)
-
     if (!user) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    // 5. Compare the provided password with the stored hashed password during login
+    // 2. Compare passwords
     const isMatch = await bcrypt.compare(user_password, user.user_password);
-    console.log("Password match:", isMatch); // Logs whether the password matches or not
-    
     if (!isMatch) {
-      return res.status(401).json({ message: 'Invalid email or password.' });
+      return res.status(401).json({ message: "Invalid email or password." });
     }
 
-    // 6. Create a JWT token if everything is fine
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    // 3. Generate JWT token
+    const token = jwt.sign(
+      { id: user._id },  // Payload
+      process.env.JWT_SECRET,  // Secret key
+      { expiresIn: '1h' }  // Expiry
+    );
 
-    // 7. Send the token back in the response
-    res.status(200).json({ token });
+    // 4. Send token in response
+    res.status(200).json({ 
+      message: "Login successful!",
+      token: token,  // Send this to the frontend
+      userId: user._id 
+    });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error." });
   }
 });
 

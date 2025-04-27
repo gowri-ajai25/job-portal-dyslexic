@@ -21,29 +21,22 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
-
-// ------------------ PUBLIC ROUTES (no authentication needed) ------------------
+// app.use(authRoutes)
+// ------------------ PUBLIC ROUTES ------------------
 app.use('/api/auth', authRoutes);  // login/signup
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));  // file uploads
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// ------------------ PROTECTED ROUTES (authentication needed) ------------------
-app.use(checkAuth); // <- Apply authentication middleware after public routes
+// ------------------ PROTECTED ROUTES ------------------
+app.use('/api/jobs', checkAuth, jobRoutes);
+app.use('/api/users', checkAuth, userRoutes);
+app.use('/api', checkAuth, fileRoutes);
 
-app.use('/api/jobs', jobRoutes);   // jobs routes
-app.use('/api/users', userRoutes); // users routes
-app.use('/api', fileRoutes);       // other protected API routes
-
-// ------------------ Serve React Frontend (after API routes) ------------------
+// ------------------ Serve React Frontend ------------------
 app.use(express.static(path.join(__dirname, 'build')));
-
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-// ------------------ Global Error Handling ------------------
-app.use((req, res, next) => {
-  throw new HttpError('Could not find this route.', 404);
-});
 
 app.use((error, req, res, next) => {
   if (res.headersSent) {
