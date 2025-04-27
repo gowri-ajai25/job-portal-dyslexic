@@ -1,0 +1,17 @@
+{
+  "files": {
+    "main.css": "/static/css/main.5cf43de8.css",
+    "main.js": "/static/js/main.795ed98f.js",
+    "static/media/OpenDyslexicAlta-Italic.otf": "/static/media/OpenDyslexicAlta-Italic.4ebe180f8ce85db1b4a3.otf",
+    "static/media/logo_4.png": "/static/media/logo_4.66804dcdf1cb2f25d862.png",
+    "static/media/OpenDyslexicAlta-Regular.otf": "/static/media/OpenDyslexicAlta-Regular.dcb2363dd178768141a8.otf",
+    "static/media/OpenDyslexicAlta-Bold.otf": "/static/media/OpenDyslexicAlta-Bold.48a088add10b1adb8f13.otf",
+    "index.html": "/index.html",
+    "main.5cf43de8.css.map": "/static/css/main.5cf43de8.css.map",
+    "main.795ed98f.js.map": "/static/js/main.795ed98f.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5cf43de8.css",
+    "static/js/main.795ed98f.js"
+  ]
+}
